@@ -1,40 +1,27 @@
 <?php
 
-// include("db_connection.php");
-// include("jwt_utils.php");
-
-// $date = new DateTimeImmutable();
-// $expire_at = $date->modify('+6 minutes')->getTimestamp(); 
-
-// $headers = array('alg'=>'HS256', 'typ'=>'JWT');
-// $payload = array(
-//     'iat'=>$data,
-//     'username'=>'ryan',
-//     'role'=>'admin',
-//     'exp'=>$expire_at
-// );
-
-// $jwt = generate_jwt($headers, $payload, 'secresecret');
-
-// echo $jwt;
-// echo "\n";
-// echo is_jwt_valid($jwt, 'secresecret');
-
-// echo "INDEX ";
-// echo $_SERVER['REQUEST_METHOD'];
-// echo $_SERVER['REQUEST_URI'];
-
 $method = $_SERVER['REQUEST_METHOD'];
 $uri = $_SERVER['REQUEST_URI'];
 
+include('authentification.php');
+
 switch ($method || $uri) {
-    case ($method == 'POST' && $uri == "/authentification"):
+    case ($method == 'POST' && $uri == "/api/authentification"):
         header('Content-Type: application/json');
-        echo json_encode(['error' => "POST API"]);
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        if (!empty($data['login']) && !empty($data['mdp'])) {
+            echo AuthentificationAPI($data['login'], $data['mdp']);
+        } else {
+            echo json_encode(['error' => "Les informations d'authentification sont incorrectes"]);
+        }
+        
         break;
-    case ($method == 'GET'):
+    case ($method == 'GET' && str_contains($uri, '/api/authentification')):
         header('Content-Type: application/json');
-        echo json_encode(['error' => "GET API"]);
+        preg_match_all('/\/api\/authentification\/[\s\S]+/', $uri, $matches);
+        echo var_dump($matches);
+        // echo ValidTokenAPI($jwt);
         break;
     default:
         http_response_code(404);
