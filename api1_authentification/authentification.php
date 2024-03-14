@@ -6,7 +6,9 @@ function AuthentificationAPI($login, $mdp) {
     include('connection_bd.php');
 
     try {
-        $sql = "SELECT auth.id_auth, auth.role FROM user_auth_v2 as auth WHERE login = :login AND mdp = :mdp";
+        $sql = "SELECT auth.id_auth, auth.role 
+                FROM user_auth_v2 as auth 
+                WHERE login = :login AND mdp = :mdp";
 
         // Paramètre SQL
         $stmt = $pdo->prepare($sql);
