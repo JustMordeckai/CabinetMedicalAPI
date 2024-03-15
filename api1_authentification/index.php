@@ -13,19 +13,23 @@ switch ($method || $uri) {
         if (!empty($data['login']) && !empty($data['mdp'])) {
             echo AuthentificationAPI($data['login'], $data['mdp']);
         } else {
-            echo json_encode(['error' => "Les informations d'authentification sont incorrectes"]);
+            echo json_encode([
+                'error' => "Les informations d'authentification sont incorrectes",
+                'error_id' => "LMDP",
+            ]);
         }
         
         break;
     case ($method == 'GET' && str_contains($uri, '/api/authentification')):
         header('Content-Type: application/json');
-        preg_match_all('/\/api\/authentification\/[\s\S]+/', $uri, $matches);
-        echo var_dump($matches);
-        // echo ValidTokenAPI($jwt);
+        echo ValidTokenAPI();
         break;
     default:
         http_response_code(404);
-        echo json_encode(['error' => "We cannot find what you're looking for."]);
+        echo json_encode([
+            'error' => "We cannot find what you're looking for.",
+            'error_id' => "HTTP404",
+        ]);
         break;
 }
 

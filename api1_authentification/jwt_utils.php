@@ -80,4 +80,11 @@ function get_bearer_token() {
     return null;
 }
 
+function get_payload_token($token) {
+	$token_parts = explode('.', $token);
+    $payload_json = base64_decode($token_parts[1]);
+    $payload = json_decode($payload_json, true);
+	return $payload;
+}
+
 ?>

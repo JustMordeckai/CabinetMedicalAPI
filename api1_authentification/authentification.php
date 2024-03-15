@@ -30,23 +30,45 @@ function AuthentificationAPI($login, $mdp) {
 
                 $jwt = generate_jwt($headers, $payload, 'eEMKZ3mw9SB3G6gx3ayLcRxQD9zb6Ex3ayLcRxQD9zb6EeEMKZ3mw9SB3G6g');
 
-                return json_encode(['token' => $jwt]);
+                return json_encode([
+                    'success' => "Compte valide",
+                    'token' => $jwt,
+                ]);
             } else {
-                return json_encode(['error' => "Nombre de compte : " . $stmt->rowCount()]);
+                return json_encode([
+                    'error' => "Compte invalide",
+                    'error_id' => "LMDPINV",
+                ]);
             }
         } else {
-            return json_encode(['error' => "Impossible de vérifier vos informations d'authentification, veuillez réessayer ultérieurement."]);
+            return json_encode([
+                'error' => "Impossible de vérifier vos informations d'authentification, veuillez réessayer ultérieurement.",
+                'error_id' => "STME"
+            ]);
         }
     } catch (PDOException $e) {
-        return json_encode(['error' => "Impossible de vérifier vos informations d'authentification, veuillez réessayer ultérieurement.", 'message' => $e->getMessage()]);
+        return json_encode([
+            'error' => "Impossible de vérifier vos informations d'authentification, veuillez réessayer ultérieurement.", 
+            'message' => $e->getMessage(),
+            'error_id' => "PDOE",
+        ]);
     }
 }
 
-function ValidTokenAPI($jwt) {
+function ValidTokenAPI() {
+    $jwt = get_bearer_token();
     if (is_jwt_valid($jwt, 'eEMKZ3mw9SB3G6gx3ayLcRxQD9zb6Ex3ayLcRxQD9zb6EeEMKZ3mw9SB3G6g')) {
-        return json_encode(['message' => "Good"]);
+        $payloadArray = get_payload_token($jwt);
+        return json_encode([
+            'success' => "Token valide",
+            'username' => $payloadArray['username'],
+            'role' => $payloadArray['role'],
+        ]);
     } else {
-        return json_encode(['error' => "Token expiré ou invalide."]);
+        return json_encode([
+            'error' => "Token expiré ou invalide.",
+            'error_id' => "TEXP",
+        ]);
     }
 }
 
